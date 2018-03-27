@@ -75,5 +75,5 @@ $dcaConfigData = preg_replace('#^sell_value\s+=\s+[-0-9.]+#m','sell_value = '.$s
 file_put_contents($dcaConfigFilePath,$dcaConfigData);
 
 $pairsConfigData = preg_replace('#^ALL_sell_value\s+=\s+[-0-9.]+#m','ALL_sell_value = '.$sellValue, $pairsConfigData);
-echo $pairsConfigData;
+
 file_put_contents($pairsConfigFilePath,$pairsConfigData);
