@@ -19,7 +19,7 @@ if (!empty(getenv('TELEGRAM_BOT_TOKEN'))) {
     $log->pushHandler(new TelegramHandler(getenv('TELEGRAM_BOT_TOKEN'), getenv('TELEGRAM_CHAT_ID'), Logger::ALERT));
 }
 
-$api = new Binance\ExtendedApi(getenv('BINANCE_API_KEY'),getenv('BINANCE_API_SECRET'));
+$api = new \Binance\API(getenv('BINANCE_API_KEY'),getenv('BINANCE_API_SECRET'));
 $symbols = $api->prevDay();
 $symbolsData = [];
 //filter the market
