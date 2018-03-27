@@ -34,7 +34,7 @@ usort($symbolsData, function ($a, $b) {
 
 $lowestChangeData = $symbolsData[intval(getenv('SELL_VALUE_COIN_INDEX')) - 1];
 
-$sellValue = max(getenv('MIN_SELL_VALUE'), $lowestChangeData['priceChangePercent']);
+$sellValue = round(max(getenv('MIN_SELL_VALUE'), $lowestChangeData['priceChangePercent']),2);
 $log->info('Sell value', [$sellValue]);
 $pairsConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties';
 $dcaConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'DCA.properties';
