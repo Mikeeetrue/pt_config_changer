@@ -34,8 +34,20 @@ usort($symbolsData, function ($a, $b) {
 
 $lowestChangeData = $symbolsData[intval(getenv('SELL_VALUE_COIN_INDEX')) - 1];
 
-$sellValue = round(min(getenv('MAX_SELL_VALUE'),max(getenv('MIN_SELL_VALUE'), $lowestChangeData['priceChangePercent'])),2);
+$sellValue = round(min(getenv('MAX_SELL_VALUE'),
+    max(getenv('MIN_SELL_VALUE'), $lowestChangeData['priceChangePercent'])), 2);
+$trailingBuy = 0.1;
+if ($sellValue > 1 && $sellValue < 3) {
+    $trailingBuy = 0.3;
+} elseif ($sellValue > 3 && $sellValue < 6) {
+    $trailingBuy = 0.5;
+} elseif ($sellValue > 6 && $sellValue < 10) {
+    $trailingBuy = 0.7;
+} else {
+    $trailingBuy = 1;
+}
 $log->info('Sell value', [$sellValue]);
+$log->info('Trailing buy',[$trailingBuy]);
 $pairsConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties';
 $dcaConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'DCA.properties';
 //check if PT config file exists
@@ -70,12 +82,14 @@ if (!is_writable($dcaConfigFilePath)) {
 }
 
 $pairsConfigData = file_get_contents($pairsConfigFilePath);
-$dcaConfigData = file_get_contents(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'DCA.properties');
+$dcaConfigData = file_get_contents($dcaConfigFilePath);
 
 $dcaConfigData = preg_replace('#^sell_value\s+=\s+[-0-9.]+#m', 'sell_value = ' . $sellValue, $dcaConfigData);
+$dcaConfigData = preg_replace('#^trailing_profit\s+=\s+[-0-9.]+#m', 'trailing_profit = ' . $trailingBuy, $dcaConfigData);
 file_put_contents($dcaConfigFilePath, $dcaConfigData);
 
 $pairsConfigData = preg_replace('#^ALL_sell_value\s+=\s+[-0-9.]+#m', 'ALL_sell_value = ' . $sellValue,
     $pairsConfigData);
-
+$pairsConfigData = preg_replace('#^ALL_trailing_profit\s+=\s+[-0-9.]+#m', 'ALL_trailing_profit = ' . $trailingBuy,
+    $pairsConfigData);
 file_put_contents($pairsConfigFilePath, $pairsConfigData);

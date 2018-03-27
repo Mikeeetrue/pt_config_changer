@@ -6,6 +6,7 @@
 4. composer update
 5. fulfill .env file with appropriate data
 6. add set_by_mikes_index.php to cron once per 15 minutes
+7. run script once by hands with `php -f set_by_mikes_index.php` and after that check the PAIRS and DCA files. Ensure that variables were set correctly
 
 ## How to add to cron
 1. crontab -e
