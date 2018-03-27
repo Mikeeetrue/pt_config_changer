@@ -19,22 +19,23 @@ if (!empty(getenv('TELEGRAM_BOT_TOKEN'))) {
     $log->pushHandler(new TelegramHandler(getenv('TELEGRAM_BOT_TOKEN'), getenv('TELEGRAM_CHAT_ID'), Logger::ALERT));
 }
 
-$api = new \Binance\API(getenv('BINANCE_API_KEY'),getenv('BINANCE_API_SECRET'));
+$api = new \Binance\API(getenv('BINANCE_API_KEY'), getenv('BINANCE_API_SECRET'));
 $symbols = $api->prevDay();
 $symbolsData = [];
 //filter the market
-foreach($symbols as $symbolEntry)
-{
-    if(endsWith($symbolEntry['symbol'],getenv('MARKET')))
+foreach ($symbols as $symbolEntry) {
+    if (endsWith($symbolEntry['symbol'], getenv('MARKET'))) {
         $symbolsData[] = $symbolEntry;
+    }
 }
-usort($symbolsData,function($a, $b){
+usort($symbolsData, function ($a, $b) {
     return $b['priceChangePercent'] <=> $a['priceChangePercent'];
 });
 
-$lowestChangeData = $symbolsData[intval(getenv('SELL_VALUE_COIN_INDEX'))-1];
+$lowestChangeData = $symbolsData[intval(getenv('SELL_VALUE_COIN_INDEX')) - 1];
 
-$sellValue = max(getenv('MIN_SELL_VALUE'),$lowestChangeData['priceChangePercent']);
+$sellValue = max(getenv('MIN_SELL_VALUE'), $lowestChangeData['priceChangePercent']);
+$log->info('Sell value', [$sellValue]);
 $pairsConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties';
 $dcaConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'DCA.properties';
 //check if PT config file exists
@@ -71,9 +72,10 @@ if (!is_writable($dcaConfigFilePath)) {
 $pairsConfigData = file_get_contents($pairsConfigFilePath);
 $dcaConfigData = file_get_contents(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'DCA.properties');
 
-$dcaConfigData = preg_replace('#^sell_value\s+=\s+[-0-9.]+#m','sell_value = '.$sellValue, $dcaConfigData);
-file_put_contents($dcaConfigFilePath,$dcaConfigData);
+$dcaConfigData = preg_replace('#^sell_value\s+=\s+[-0-9.]+#m', 'sell_value = ' . $sellValue, $dcaConfigData);
+file_put_contents($dcaConfigFilePath, $dcaConfigData);
 
-$pairsConfigData = preg_replace('#^ALL_sell_value\s+=\s+[-0-9.]+#m','ALL_sell_value = '.$sellValue, $pairsConfigData);
+$pairsConfigData = preg_replace('#^ALL_sell_value\s+=\s+[-0-9.]+#m', 'ALL_sell_value = ' . $sellValue,
+    $pairsConfigData);
 
-file_put_contents($pairsConfigFilePath,$pairsConfigData);
+file_put_contents($pairsConfigFilePath, $pairsConfigData);
