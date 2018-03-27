@@ -10,7 +10,7 @@
 
 ## How to add to cron
 1. crontab -e
-2. at the very end from new line add (change /path/to/ to the path of the dir with script)
+2. at the very end of the screen from new line add (change /path/to/ to the path of the dir with script)
 ` */15 * * * * (cd /path/to/pt_config_changer/ && php -f set_by_mikes_index.php >> /tmp/pt_config_updater_mikes_index) `
 
 3. make sure that at the end of the file there is blank line
