@@ -37,9 +37,9 @@ $lowestChangeData = $symbolsData[intval(getenv('SELL_VALUE_COIN_INDEX')) - 1];
 $sellValue = round(min(getenv('MAX_SELL_VALUE'),
     max(getenv('MIN_SELL_VALUE'), $lowestChangeData['priceChangePercent'])), 2);
 $trailingBuy = 0.1;
-if ($sellValue > 1 && $sellValue < 3) {
+if ($sellValue > 1 && $sellValue <= 3) {
     $trailingBuy = 0.3;
-} elseif ($sellValue > 3 && $sellValue < 6) {
+} elseif ($sellValue > 3 && $sellValue <= 6) {
     $trailingBuy = 0.5;
 } elseif ($sellValue > 6 && $sellValue < 10) {
     $trailingBuy = 0.7;
