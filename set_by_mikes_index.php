@@ -41,9 +41,9 @@ if ($sellValue > 1 && $sellValue <= 3) {
     $trailingBuy = 0.3;
 } elseif ($sellValue > 3 && $sellValue <= 6) {
     $trailingBuy = 0.5;
-} elseif ($sellValue > 6 && $sellValue < 10) {
+} elseif ($sellValue > 6 && $sellValue <= 10) {
     $trailingBuy = 0.7;
-} else {
+} elseif($sellValue > 10) {
     $trailingBuy = 1;
 }
 $log->info('Sell value', [$sellValue]);
