@@ -41,4 +41,9 @@ if (json_last_error() != JSON_ERROR_NONE) {
     exit(1);
 }
 
+if(!is_writable(getenv('BACKUP_PATH') . 'ProfitTrailerData.json'))
+{
+    $log->alert('Destination path for backup is not writable',[getenv('BACKUP_PATH') . 'ProfitTrailerData.json']);
+    exit(1);
+}
 copy($ptDataFilePath, getenv('BACKUP_PATH') . 'ProfitTrailerData.json');

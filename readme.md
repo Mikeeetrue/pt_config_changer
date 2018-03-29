@@ -15,3 +15,7 @@
 
 3. make sure that at the end of the file there is blank line
 4. save and exit 
+
+## How to use backup script
+1. ensure that in your .env file BACKUP_PATH var is set to you backup location and it is writable for user from which cron is run
+2. add to cron with crontab -e ` */1 * * * * (cd /path/to/pt_config_changer/ && php -f backup_pt_datafile.php) ` (make sure you've changed /path/to/ to appropriate path)
