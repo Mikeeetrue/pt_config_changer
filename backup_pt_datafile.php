@@ -39,6 +39,7 @@ $data = json_decode($data, true);
 
 if (json_last_error() != JSON_ERROR_NONE) {
     // there is can be a time when PT saves data and we read it broken. so we will try one more time
+    sleep(5);
     $data = file_get_contents($ptDataFilePath);
     $data = json_decode($data, true);
     if (json_last_error() != JSON_ERROR_NONE) {
