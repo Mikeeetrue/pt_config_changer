@@ -25,4 +25,5 @@
 
 ## In case of any issues
 1. Try to update. Maybe new version is available which fixes your issues.
-2. If section 1 doesn't work than calm down and drink coffee. Start hoping that author will fix the issue soon.
+2. Try to reinstall from scratch
+3. If above sections don't work than calm down and drink coffee. Start hoping that author will fix the issue soon.
