@@ -36,9 +36,15 @@ if (!is_readable($ptDataFilePath)) {
 
 $data = file_get_contents($ptDataFilePath);
 $data = json_decode($data, true);
+
 if (json_last_error() != JSON_ERROR_NONE) {
-    $log->alert('!!!PT data file is broken!!!');
-    exit(1);
+    // there is can be a time when PT saves data and we read it broken. so we will try one more time
+    $data = file_get_contents($ptDataFilePath);
+    $data = json_decode($data, true);
+    if (json_last_error() != JSON_ERROR_NONE) {
+        $log->alert('!!!PT data file is broken!!!');
+        exit(1);
+    }
 }
 
 if (file_exists(getenv('BACKUP_PATH') . 'ProfitTrailerData.json') && !is_writable(getenv('BACKUP_PATH') . 'ProfitTrailerData.json')) {

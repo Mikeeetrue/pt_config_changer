@@ -12,11 +12,5 @@
     "files": ["includes/Tools.php"]
   },
   "minimum-stability": "dev",
-  "prefer-stable": true,
-  "repositories": [
-    {
-      "type":"vcs",
-      "url": "https://github.com/jokaorgua/php-binance-api.git"
-    }
-  ]
+  "prefer-stable": true
 }
