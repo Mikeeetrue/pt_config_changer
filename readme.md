@@ -19,3 +19,10 @@
 ## How to use backup script
 1. ensure that in your .env file BACKUP_PATH var is set to you backup location and it is writable for user from which cron is run
 2. add to cron with crontab -e ` */1 * * * * (cd /path/to/pt_config_changer/ && php -f backup_pt_datafile.php) ` (make sure you've changed /path/to/ to appropriate path)
+
+## How to update the project
+1. Execute ` git pull && composer update` in script's dir.
+
+## In case of any issues
+1. Try to update. Maybe new version is available which fixes your issues.
+2. If section 1 doesn't work than calm down and drink coffee. Start hoping that author will fix the issue soon.
