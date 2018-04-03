@@ -20,7 +20,7 @@ if (!empty(getenv('TELEGRAM_BOT_TOKEN'))) {
 }
 
 $api = new \Binance\API(getenv('BINANCE_API_KEY'), getenv('BINANCE_API_SECRET'));
-$symbols = $api->prevDay(null);
+$symbols = $api->prevDay();
 $symbolsData = [];
 //filter the market
 foreach ($symbols as $symbolEntry) {
