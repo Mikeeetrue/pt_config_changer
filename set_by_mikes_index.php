@@ -39,9 +39,9 @@ $lowestBuyTriggerChangeData = $symbolsData[intval(getenv('BUY_TRIGGER_COIN_INDEX
 $sellValue = round(min(getenv('MAX_SELL_VALUE'),
     max(getenv('MIN_SELL_VALUE'), $lowestSellValueChangeData['priceChangePercent'])), 2);
 $buyValue = round(min(getenv('MAX_BUY_VALUE'),
-    max(getenv('MIN_BUY_VALUE'), $lowestSellValueChangeData['priceChangePercent'])), 2);
+    max(getenv('MIN_BUY_VALUE'), $lowestBuyValueChangeData['priceChangePercent'])), 2);
 $buyTrigger = round(min(getenv('MAX_BUY_TRIGGER'),
-    max(getenv('MIN_BUY_TRIGGER'), $lowestSellValueChangeData['priceChangePercent'])), 2);
+    max(getenv('MIN_BUY_TRIGGER'), $lowestBuyTriggerChangeData['priceChangePercent'])), 2);
 $trailingBuy = 0.2;
 if ($sellValue > 1 && $sellValue <= 3) {
     $trailingBuy = 0.3;
