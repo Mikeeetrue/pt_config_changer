@@ -99,7 +99,7 @@ file_put_contents($dcaConfigFilePath, $dcaConfigData);
 
 $pairsConfigData = preg_replace('#^ALL_sell_value\s+=\s+[-0-9.]+#m', 'ALL_sell_value = ' . $sellValue,
     $pairsConfigData);
-$pairsConfigData = preg_replace('#^ALL_buy_value\s+=\s+[-0-9.]+#m', 'ALL_sell_value = ' . $buyValue,
+$pairsConfigData = preg_replace('#^ALL_buy_value\s+=\s+[-0-9.]+#m', 'ALL_buy_value = ' . $buyValue,
     $pairsConfigData);
 $pairsConfigData = preg_replace('#^ALL_trailing_profit\s+=\s+[-0-9.]+#m', 'ALL_trailing_profit = ' . $trailingBuy,
     $pairsConfigData);
