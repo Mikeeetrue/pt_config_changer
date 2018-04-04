@@ -93,6 +93,7 @@ $pairsConfigData = file_get_contents($pairsConfigFilePath);
 $dcaConfigData = file_get_contents($dcaConfigFilePath);
 
 $dcaConfigData = preg_replace('#^sell_value\s+=\s+[-0-9.]+#m', 'sell_value = ' . $sellValue, $dcaConfigData);
+$dcaConfigData = preg_replace('#^trailing_profit\s+=\s+[-0-9.]+#m', 'trailing_profit = ' . $trailingBuy, $dcaConfigData);
 $dcaConfigData = preg_replace('#^buy_value\s+=\s+[-0-9.]+#m', 'buy_value = ' . $buyValue, $dcaConfigData);
 $dcaConfigData = preg_replace('#^buy_trigger\s+=\s+[-0-9.]+#m', 'buy_trigger = ' . $buyTrigger, $dcaConfigData);
 file_put_contents($dcaConfigFilePath, $dcaConfigData);
