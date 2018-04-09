@@ -1,6 +1,6 @@
 ## How to use
 
-1. git clone https://github.com/jokaorgua/pt_config_changer.git
+1. For PT 1.* use `git clone -b pt_1 https://github.com/jokaorgua/pt_config_changer.git`. For PT 2 use `git clone https://github.com/jokaorgua/pt_config_changer.git`
 2. cd pt_config_changer
 3. cp .env.example .env
 4. composer update
