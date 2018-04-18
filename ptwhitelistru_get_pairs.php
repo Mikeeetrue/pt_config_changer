@@ -69,6 +69,9 @@ $result = $guzzle->request('POST', '/index.php?route=common/home',
             'filterpricedays' => getenv('PTWHITELISTRU_PRICE_DAYS'),
             'filterpricepercent' => getenv('PTWHITELISTRU_PRICE_PERCENT'),
             'filterpricepercentdown' => getenv('PTWHITELISTRU_PRICE_PERCENT_DOWN'),
+            'filtervola' => getenv('PTWHITELISTRU_VOLATILITY_PERCENT'),
+            'filtervoladays' => getenv('PTWHITELISTRU_VOLATILITY_DAYS'),
+            'filtervolacount' => getenv('PTWHITELISTRU_VOLATILITY_COUNT'),
         ]
     ]);
 $responseCode = $result->getBody()->getContents();
