@@ -100,7 +100,7 @@ if (!is_writable(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIR
     exit(1);
 }
 
-$pairsConfigData = file_get_contents(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties');
+$pairsConfigData = trim(file_get_contents(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties'));
 
 // ensure that ALL_sell_only_mode enabled
 if (!preg_match('#ALL_sell_only_mode\s+=\s+true#', $pairsConfigData)) {
@@ -109,16 +109,15 @@ if (!preg_match('#ALL_sell_only_mode\s+=\s+true#', $pairsConfigData)) {
 }
 
 //remove all false sell modes
-
-$pairsConfigData = preg_replace("#^[A-Z]{5,8}_sell_only_mode\s+=\s+false#m", '', $pairsConfigData);
-$pairsConfigData = trim($pairsConfigData) . PHP_EOL . PHP_EOL;
+$pairsConfigData = preg_replace("/#PTWHITELISTRU_PAIRS_UPDATER_START.*PTWHITELISTRU_PAIRS_UPDATER_END/s", '', $pairsConfigData);
+$pairsConfigData = trim($pairsConfigData) . PHP_EOL . PHP_EOL."#PTWHITELISTRU_PAIRS_UPDATER_START";
 
 
 foreach ($PAIRS as $pair) {
     $log->info($pair . strtoupper(getenv('MARKET')) . '_sell_only_mode = false');
     $pairsConfigData .= PHP_EOL . $pair . getenv('MARKET') . '_sell_only_mode = false';
 }
-
+$pairsConfigData .= PHP_EOL.'#PTWHITELISTRU_PAIRS_UPDATER_END'.PHP_EOL;
 file_put_contents(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties', $pairsConfigData);
 
 
