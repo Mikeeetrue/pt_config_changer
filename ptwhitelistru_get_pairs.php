@@ -15,7 +15,7 @@ $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
 // create a log channel
-$log = new Logger('name');
+$log = new Logger('ptwhitelistru_get_pairs');
 $log->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 $log->pushHandler(new TelegramHandler(getenv('TELEGRAM_BOT_TOKEN'), getenv('TELEGRAM_CHAT_ID'), Logger::ALERT));
 
