@@ -110,6 +110,7 @@ if (!preg_match('#ALL_sell_only_mode\s+=\s+true#', $pairsConfigData)) {
 
 //remove all false sell modes
 $pairsConfigData = preg_replace("/#PTWHITELISTRU_PAIRS_UPDATER_START.*PTWHITELISTRU_PAIRS_UPDATER_END/s", '', $pairsConfigData);
+$pairsConfigData = preg_replace("/\n+/s", PHP_EOL, $pairsConfigData);
 $pairsConfigData = trim($pairsConfigData) . PHP_EOL . PHP_EOL."#PTWHITELISTRU_PAIRS_UPDATER_START";
 
 
