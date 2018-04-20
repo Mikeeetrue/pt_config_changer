@@ -27,7 +27,7 @@ $stack = HandlerStack::create();
 $stack->push($history);
 $params = [
     'base_uri' => 'http://ptwhitelist.ru/',
-    'timeout' => 5,
+    'timeout' => 30,
     'cookies' => true,
     'handler' => $stack
 ];
@@ -84,27 +84,36 @@ if (empty($PAIRS)) {
     $log->alert('Found ZERO pairs for enabling. Will disable everything.');
     exit(1);
 }
-//check if PT config file exists
-if (!file_exists(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties')) {
-    $log->alert('PT pairs config doesnt exist. WFT???');
+
+$ptGuzzle = new GuzzleHttp\Client([
+    'base_uri' => getenv('PT_BASE_URL'),
+    'timeout' => 30,
+    'cookies' => true,
+]);
+
+$result = $ptGuzzle->request('POST', '/settingsapi/settings/load', [
+    'query' => [
+        'license' => getenv('PT_LICENSE_KEY'),
+        'fileName' => 'PAIRS'
+    ]
+
+]);
+
+if ($result->getStatusCode() != 200) {
+    $log->alert('Cant get PAIRS file from PT');
     exit(1);
 }
-
-if (!is_readable(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties')) {
-    $log->alert('PT pairs config it not readable.');
+$pairsDataArray = json_decode($result->getBody()->getContents());
+if(json_last_error() != JSON_ERROR_NONE)
+{
+    $log->alert('Cant decode PAIRS file from PT');
     exit(1);
 }
-
-if (!is_writable(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties')) {
-    $log->alert('PT pairs config is not writable.');
-    exit(1);
-}
-
-$pairsConfigData = trim(file_get_contents(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties'));
+$pairsConfigData = implode(PHP_EOL,$pairsDataArray);
 
 // ensure that ALL_sell_only_mode enabled
-if (!preg_match('#ALL_sell_only_mode\s+=\s+true#', $pairsConfigData)) {
-    $log->alert('Please enable ALL_sell_only_mode');
+if (!preg_match('#DEFAULT_sell_only_mode_enabled\s+=\s+true#', $pairsConfigData)) {
+    $log->alert('Please enable DEFAULT_sell_only_mode_enabled');
     exit(1);
 }
 
@@ -115,10 +124,24 @@ $pairsConfigData = trim($pairsConfigData) . PHP_EOL . PHP_EOL."#PTWHITELISTRU_PA
 
 
 foreach ($PAIRS as $pair) {
-    $log->info($pair . strtoupper(getenv('MARKET')) . '_sell_only_mode = false');
-    $pairsConfigData .= PHP_EOL . $pair . getenv('MARKET') . '_sell_only_mode = false';
+    $log->info($pair .  '_sell_only_mode_enabled = false');
+    $pairsConfigData .= PHP_EOL . $pair . '_sell_only_mode_enabled = false';
 }
 $pairsConfigData .= PHP_EOL.'#PTWHITELISTRU_PAIRS_UPDATER_END'.PHP_EOL;
-file_put_contents(getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties', $pairsConfigData);
+$result = $ptGuzzle->request('POST', '/settingsapi/settings/save', [
+    'query' => [
+        'license' => getenv('PT_LICENSE_KEY'),
+        'fileName' => 'PAIRS'
+    ],
+    'form_params' =>
+        [
+            'saveData' => $pairsConfigData
+        ]
+
+]);
+if ($result->getStatusCode() != 200) {
+    $log->alert('Cant update PAIRS file in PT');
+    exit(1);
+}
 
 
