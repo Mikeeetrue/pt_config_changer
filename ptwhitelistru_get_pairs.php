@@ -89,6 +89,7 @@ $ptGuzzle = new GuzzleHttp\Client([
     'base_uri' => getenv('PT_BASE_URL'),
     'timeout' => 30,
     'cookies' => true,
+    'verify' => false
 ]);
 
 $result = $ptGuzzle->request('POST', '/settingsapi/settings/load', [
