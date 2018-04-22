@@ -15,7 +15,7 @@ $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
 // create a log channel
-$log = new Logger('ptwhitelistru_get_pairs.'.gethostname());
+$log = new Logger('ptwhitelistru_get_pairs.' . gethostname());
 $log->pushHandler(new StreamHandler('php://stdout', Logger::DEBUG));
 $log->pushHandler(new TelegramHandler(getenv('TELEGRAM_BOT_TOKEN'), getenv('TELEGRAM_CHAT_ID'), Logger::ALERT));
 
@@ -105,12 +105,11 @@ if ($result->getStatusCode() != 200) {
     exit(1);
 }
 $pairsDataArray = json_decode($result->getBody()->getContents());
-if(json_last_error() != JSON_ERROR_NONE)
-{
+if (json_last_error() != JSON_ERROR_NONE) {
     $log->alert('Cant decode PAIRS file from PT');
     exit(1);
 }
-$pairsConfigData = implode(PHP_EOL,$pairsDataArray);
+$pairsConfigData = implode(PHP_EOL, $pairsDataArray);
 
 // ensure that ALL_sell_only_mode enabled
 if (!preg_match('#DEFAULT_sell_only_mode_enabled\s+=\s+true#', $pairsConfigData)) {
@@ -119,16 +118,30 @@ if (!preg_match('#DEFAULT_sell_only_mode_enabled\s+=\s+true#', $pairsConfigData)
 }
 
 //remove all false sell modes
-$pairsConfigData = preg_replace("/#PTWHITELISTRU_PAIRS_UPDATER_START.*PTWHITELISTRU_PAIRS_UPDATER_END/s", '', $pairsConfigData);
+$pairsConfigData = preg_replace("/#PTWHITELISTRU_PAIRS_UPDATER_START.*PTWHITELISTRU_PAIRS_UPDATER_END/s", '',
+    $pairsConfigData);
 $pairsConfigData = preg_replace("/\n+/s", PHP_EOL, $pairsConfigData);
-$pairsConfigData = trim($pairsConfigData) . PHP_EOL . PHP_EOL."#PTWHITELISTRU_PAIRS_UPDATER_START";
-
+$pairsConfigData = trim($pairsConfigData) . PHP_EOL . PHP_EOL . "#PTWHITELISTRU_PAIRS_UPDATER_START";
+$ptBlackList = explode(',', getenv('PTWHITELISTRU_BLACKLIST'));
+$ptBlackList = array_map(function ($el) {
+    return strtolower($el);
+}, $ptBlackList);
 
 foreach ($PAIRS as $pair) {
-    $log->info($pair .  '_sell_only_mode_enabled = false');
+    if (in_array(strtolower($pair), $ptBlackList)) {
+        continue;
+    }
+    $log->info($pair . '_sell_only_mode_enabled = false');
     $pairsConfigData .= PHP_EOL . $pair . '_sell_only_mode_enabled = false';
+    $pairsConfigData .= PHP_EOL . $pair . '_A_buy_strategy = RSI';
+    $pairsConfigData .= PHP_EOL . $pair . '_A_buy_value = 50';
+    $pairsConfigData .= PHP_EOL . $pair . '_A_buy_value_limit = 0';
+    $pairsConfigData .= PHP_EOL . $pair . '_C_buy_strategy = DISABLED';
+    $pairsConfigData .= PHP_EOL . $pair . '_D_buy_strategy = DISABLED';
+    $pairsConfigData .= PHP_EOL . $pair . '_E_buy_strategy = DISABLED';
+    $pairsConfigData .= PHP_EOL . $pair . '_initial_cost = 0.0012';
 }
-$pairsConfigData .= PHP_EOL.'#PTWHITELISTRU_PAIRS_UPDATER_END'.PHP_EOL;
+$pairsConfigData .= PHP_EOL . '#PTWHITELISTRU_PAIRS_UPDATER_END' . PHP_EOL;
 $result = $ptGuzzle->request('POST', '/settingsapi/settings/save', [
     'query' => [
         'license' => getenv('PT_LICENSE_KEY'),
