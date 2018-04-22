@@ -133,12 +133,6 @@ foreach ($PAIRS as $pair) {
     }
     $log->info($pair . '_sell_only_mode_enabled = false');
     $pairsConfigData .= PHP_EOL . $pair . '_sell_only_mode_enabled = false';
-    $pairsConfigData .= PHP_EOL . $pair . '_A_buy_strategy = RSI';
-    $pairsConfigData .= PHP_EOL . $pair . '_A_buy_value = 50';
-    $pairsConfigData .= PHP_EOL . $pair . '_A_buy_value_limit = 0';
-    $pairsConfigData .= PHP_EOL . $pair . '_C_buy_strategy = DISABLED';
-    $pairsConfigData .= PHP_EOL . $pair . '_D_buy_strategy = DISABLED';
-    $pairsConfigData .= PHP_EOL . $pair . '_E_buy_strategy = DISABLED';
     $pairsConfigData .= PHP_EOL . $pair . '_initial_cost = 0.0012';
 }
 $pairsConfigData .= PHP_EOL . '#PTWHITELISTRU_PAIRS_UPDATER_END' . PHP_EOL;
