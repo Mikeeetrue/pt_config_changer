@@ -1,4 +1,5 @@
 <?php
+die('script is not working for now');
 /**
  * This script calculates Mike's index and sets it as sell value
  *
