@@ -133,7 +133,7 @@ foreach ($PAIRS as $pair) {
     }
     $log->info($pair . '_sell_only_mode_enabled = false');
     $pairsConfigData .= PHP_EOL . $pair . '_sell_only_mode_enabled = false';
-    $pairsConfigData .= PHP_EOL . $pair . '_initial_cost = 0.0012';
+    $pairsConfigData .= PHP_EOL . $pair . '_initial_cost = '.getenv('PTWHITELISTRU_INITIAL_COST');
 }
 $pairsConfigData .= PHP_EOL . '#PTWHITELISTRU_PAIRS_UPDATER_END' . PHP_EOL;
 $result = $ptGuzzle->request('POST', '/settingsapi/settings/save', [

@@ -56,47 +56,73 @@ $log->info('Sell value', [$sellValue]);
 $log->info('Buy value', [$buyValue]);
 $log->info('Buy trigger', [$buyTrigger]);
 $log->info('Trailing buy',[$trailingBuy]);
-$pairsConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'PAIRS.properties';
-$dcaConfigFilePath = getenv('PT_ROOT_DIR') . 'trading' . DIRECTORY_SEPARATOR . 'DCA.properties';
-//check if PT config file exists
-if (!file_exists($pairsConfigFilePath)) {
-    $log->alert('PT pairs config doesnt exist. WFT???');
-    exit(1);
-}
 
-if (!is_readable($pairsConfigFilePath)) {
-    $log->alert('PT pairs config it not readable.');
-    exit(1);
-}
+$ptGuzzle = new GuzzleHttp\Client([
+    'base_uri' => getenv('PT_BASE_URL'),
+    'timeout' => 30,
+    'cookies' => true,
+    'verify' => false
+]);
 
-if (!is_writable($pairsConfigFilePath)) {
-    $log->alert('PT pairs config is not writable.');
-    exit(1);
-}
-//check if PT config file exists
-if (!file_exists($dcaConfigFilePath)) {
-    $log->alert('PT dca config doesnt exist. WFT???');
-    exit(1);
-}
+$result = $ptGuzzle->request('POST', '/settingsapi/settings/load', [
+    'query' => [
+        'license' => getenv('PT_LICENSE_KEY'),
+        'fileName' => 'PAIRS'
+    ]
 
-if (!is_readable($dcaConfigFilePath)) {
-    $log->alert('PT dca config it not readable.');
+]);
+
+if ($result->getStatusCode() != 200) {
+    $log->alert('Cant get PAIRS file from PT');
     exit(1);
 }
-
-if (!is_writable($dcaConfigFilePath)) {
-    $log->alert('PT dca config is not writable.');
+$pairsDataArray = json_decode($result->getBody()->getContents());
+if(json_last_error() != JSON_ERROR_NONE)
+{
+    $log->alert('Cant decode PAIRS file from PT');
     exit(1);
 }
+$pairsConfigData = implode(PHP_EOL,$pairsDataArray);
 
-$pairsConfigData = file_get_contents($pairsConfigFilePath);
-$dcaConfigData = file_get_contents($dcaConfigFilePath);
+$result = $ptGuzzle->request('POST', '/settingsapi/settings/load', [
+    'query' => [
+        'license' => getenv('PT_LICENSE_KEY'),
+        'fileName' => 'DCA'
+    ]
+
+]);
+
+if ($result->getStatusCode() != 200) {
+    $log->alert('Cant get DCA file from PT');
+    exit(1);
+}
+$dcaDataArray = json_decode($result->getBody()->getContents());
+if(json_last_error() != JSON_ERROR_NONE)
+{
+    $log->alert('Cant decode DCA file from PT');
+    exit(1);
+}
+$dcaConfigData = implode(PHP_EOL,$dcaDataArray);
 
 $dcaConfigData = preg_replace('#^sell_value\s+=\s+[-0-9.]+#m', 'sell_value = ' . $sellValue, $dcaConfigData);
 $dcaConfigData = preg_replace('#^trailing_profit\s+=\s+[-0-9.]+#m', 'trailing_profit = ' . $trailingBuy, $dcaConfigData);
 $dcaConfigData = preg_replace('#^buy_value\s+=\s+[-0-9.]+#m', 'buy_value = ' . $buyValue, $dcaConfigData);
 $dcaConfigData = preg_replace('#^buy_trigger\s+=\s+[-0-9.]+#m', 'buy_trigger = ' . $buyTrigger, $dcaConfigData);
-file_put_contents($dcaConfigFilePath, $dcaConfigData);
+$result = $ptGuzzle->request('POST', '/settingsapi/settings/save', [
+    'query' => [
+        'license' => getenv('PT_LICENSE_KEY'),
+        'fileName' => 'DCA'
+    ],
+    'form_params' =>
+        [
+            'saveData' => $dcaConfigData
+        ]
+
+]);
+if ($result->getStatusCode() != 200) {
+    $log->alert('Cant update DCA file in PT');
+    exit(1);
+}
 
 $pairsConfigData = preg_replace('#^ALL_sell_value\s+=\s+[-0-9.]+#m', 'ALL_sell_value = ' . $sellValue,
     $pairsConfigData);
@@ -104,4 +130,18 @@ $pairsConfigData = preg_replace('#^ALL_buy_value\s+=\s+[-0-9.]+#m', 'ALL_buy_val
     $pairsConfigData);
 $pairsConfigData = preg_replace('#^ALL_trailing_profit\s+=\s+[-0-9.]+#m', 'ALL_trailing_profit = ' . $trailingBuy,
     $pairsConfigData);
-file_put_contents($pairsConfigFilePath, $pairsConfigData);
+$result = $ptGuzzle->request('POST', '/settingsapi/settings/save', [
+    'query' => [
+        'license' => getenv('PT_LICENSE_KEY'),
+        'fileName' => 'PAIRS'
+    ],
+    'form_params' =>
+        [
+            'saveData' => $pairsConfigData
+        ]
+
+]);
+if ($result->getStatusCode() != 200) {
+    $log->alert('Cant update PAIRS file in PT');
+    exit(1);
+}
