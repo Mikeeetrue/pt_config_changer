@@ -1,5 +1,5 @@
 <?php
-die('script is not working for now');
+
 /**
  * This script calculates Mike's index and sets it as sell value
  *
@@ -105,10 +105,16 @@ if(json_last_error() != JSON_ERROR_NONE)
 }
 $dcaConfigData = implode(PHP_EOL,$dcaDataArray);
 
-$dcaConfigData = preg_replace('#^sell_value\s+=\s+[-0-9.]+#m', 'sell_value = ' . $sellValue, $dcaConfigData);
-$dcaConfigData = preg_replace('#^trailing_profit\s+=\s+[-0-9.]+#m', 'trailing_profit = ' . $trailingBuy, $dcaConfigData);
-$dcaConfigData = preg_replace('#^buy_value\s+=\s+[-0-9.]+#m', 'buy_value = ' . $buyValue, $dcaConfigData);
-$dcaConfigData = preg_replace('#^buy_trigger\s+=\s+[-0-9.]+#m', 'buy_trigger = ' . $buyTrigger, $dcaConfigData);
+$dcaConfigData = preg_replace('#(DEFAULT_DCA_[A-Z]_sell_strategy\s+=\s+GAIN\s+DEFAULT_DCA_[A-Z]_sell_value\s+=\s+)[-0-9.]+#s', '$1 ' . $sellValue, $dcaConfigData);
+$dcaConfigData = preg_replace('#^DEFAULT_DCA_trailing_buy\s+=\s+[-0-9.]+#m', 'DEFAULT_DCA_trailing_buy = ' . $trailingBuy, $dcaConfigData);
+
+
+
+$pairsConfigData = preg_replace('#(DEFAULT_[A-Z]_sell_strategy\s+=\s+GAIN\s+DEFAULT_[A-Z]_sell_value\s+=\s+)[-0-9.]+#s', '$1 ' . $sellValue,
+    $pairsConfigData);
+$pairsConfigData = preg_replace('#^DEFAULT_trailing_buy\s+=\s+[-0-9.]+#m', 'DEFAULT_trailing_buy = ' . $trailingBuy,
+    $pairsConfigData);
+
 $result = $ptGuzzle->request('POST', '/settingsapi/settings/save', [
     'query' => [
         'license' => getenv('PT_LICENSE_KEY'),
@@ -124,13 +130,6 @@ if ($result->getStatusCode() != 200) {
     $log->alert('Cant update DCA file in PT');
     exit(1);
 }
-
-$pairsConfigData = preg_replace('#^ALL_sell_value\s+=\s+[-0-9.]+#m', 'ALL_sell_value = ' . $sellValue,
-    $pairsConfigData);
-$pairsConfigData = preg_replace('#^ALL_buy_value\s+=\s+[-0-9.]+#m', 'ALL_buy_value = ' . $buyValue,
-    $pairsConfigData);
-$pairsConfigData = preg_replace('#^ALL_trailing_profit\s+=\s+[-0-9.]+#m', 'ALL_trailing_profit = ' . $trailingBuy,
-    $pairsConfigData);
 $result = $ptGuzzle->request('POST', '/settingsapi/settings/save', [
     'query' => [
         'license' => getenv('PT_LICENSE_KEY'),
