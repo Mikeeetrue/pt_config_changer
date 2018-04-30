@@ -89,14 +89,12 @@ $log->info('Trailing', [$trailingProfit]);
 
 $dcaConfigData = preg_replace('#(DEFAULT_DCA_B_sell_value\s+=)\s+[-0-9.]+#s', '$1 ' . $sellValue, $dcaConfigData);
 $dcaConfigData = preg_replace('#(DEFAULT_DCA_trailing_buy\s+=)\s+[-0-9.]+#m', '$1 ' . $trailingProfit, $dcaConfigData);
-echo $dcaConfigData;
 
 $pairsConfigData = preg_replace('#(DEFAULT_A_sell_value\s+=)\s+[-0-9.]+#s', '$1 ' . $sellValue, $pairsConfigData);
 $pairsConfigData = preg_replace('#(DEFAULT_trailing_profit\s+=)\s+[-0-9.]+#m', '$1 ' . $trailingProfit,
     $pairsConfigData);
 
-echo $pairsConfigData;
-dd('end');
+
 try {
     $pt->saveConfigData('PAIRS', $pairsConfigData);
     $pt->saveConfigData('DCA', $dcaConfigData);
